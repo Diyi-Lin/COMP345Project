@@ -56,7 +56,6 @@ public:
 
 private:
 
-
 	struct ValidityData
 	{
 		bool filesFound = false;
