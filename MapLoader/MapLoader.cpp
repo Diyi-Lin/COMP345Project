@@ -1,7 +1,7 @@
 #include "MapLoader.h"
 
 
-vector<string> MapLoader::split(string line)
+vector<string> MapLoader::split(string line) const
 {
 	vector<string> splitStrings;
 	size_t prev{ 0 }, pos{ 0 };
@@ -18,124 +18,114 @@ vector<string> MapLoader::split(string line)
 	return splitStrings;
 }
 
-
-void MapLoader::handleData(string line, DataType dataType)
+void MapLoader::processBorders(string line, DataType* dataType)
 {
-	switch (dataType)
+	vector<string> words = split(line);
+	if (words.size() > 0)
 	{
-	case(DataType::Continents):
-	{
-
-		vector<string> words = split(line);
-		Continent* continent = new Continent();
-		if (words.size() > 0)
+		if (words.size() < 2)
 		{
-			if (words.size() != 3)
-				validityData->validData = false;
-			continent->name = words[0];
-			int index;
-			try {
-				continent->armyValue = stoi(words[1]);
-			}
-			catch (invalid_argument)
-			{
-				cout << "failure reading integer" << endl;
-				validityData->validData = false;
-			}
-			generatedMap->continents.push_back(continent);
-			continentsMap->insert(pair<int, Continent*>(generatedMap->continents.size(), continent));
+			validityData->validData = false;
+			cout << "Error, territory has no edges... invalid map file" << endl;
 		}
-		else
-			dataType = DataType::None;
-		break;
-	}
-	case(DataType::Territories):
-	{
-		Territory* territory = new Territory();
-		vector<string> words = split(line);
-		if (words.size() > 0)
-		{
-			if (words.size() < 3)
-				validityData->validData = false;
-			territory->name = words[1];
-			try {
-				map<int, Continent*>::iterator it;
-				it = continentsMap->find(stoi(words[2]));
-				if (it != continentsMap->end())
-					it->second->territories.push_back(territory);
-				else
-				{
-					validityData->validData = false;
-					cout << "Iterator not found for continent: " << stoi(words[2]) << endl;
-				}
-
-
-				generatedMap->territories.push_back(territory);
-				territoriesMap->insert(pair<int, Territory*>(stoi(words[0]), territory));
-
-			}
-			catch (invalid_argument)
+		try {
+			map<int, Territory*>::iterator it;
+			it = territoriesMap->find(stoi(words[0]));
+			Territory* territory;
+			if (it != territoriesMap->end())
 			{
-				cout << "failure reading integer" << endl;
-				validityData->validData = false;
-			}
-		}
-		else
-			dataType = DataType::None;
-		break;
-	}
-	case(DataType::Borders):
-	{
-		vector<string> words = split(line);
-		if (words.size() > 0)
-		{
-			if (words.size() < 2)
-			{
-				validityData->validData = false;
-				cout << "Error, territory has no edges... invalid map file" << endl;
-			}
-			try {
-				map<int, Territory*>::iterator it;
-				it = territoriesMap->find(stoi(words[0]));
-				Territory* territory;
-				if (it != territoriesMap->end())
+				territory = it->second;
+				for (int i = 1; i < words.size(); i++)
 				{
-					territory = it->second;
-					for (int i = 1; i < words.size(); i++)
+					it = territoriesMap->find(stoi(words[i]));
+					if (it != territoriesMap->end())
+						territory->neighbors.push_back(it->second);
+					else
 					{
-						it = territoriesMap->find(stoi(words[i]));
-						if (it != territoriesMap->end())
-							territory->neighbors.push_back(it->second);
-						else
-						{
-							validityData->validData = false;
-							cout << "Iterator not found for territory: " << stoi(words[i]) << endl;
-						}
-
+						validityData->validData = false;
+						cout << "Iterator not found for territory: " << stoi(words[i]) << endl;
 					}
-				}
-				else
-				{
-					validityData->validData = false;
-					cout << "Iterator not found for territory: " << words[0] << endl;
-				}
 
-
+				}
 			}
-			catch (invalid_argument)
+			else
 			{
-				cout << "failure reading integer" << endl;
 				validityData->validData = false;
+				cout << "Iterator not found for territory: " << words[0] << endl;
 			}
-		}
-		else
-			dataType = DataType::None;
-		break;
-	}
 
+
+		}
+		catch (invalid_argument)
+		{
+			cout << "failure reading integer" << endl;
+			validityData->validData = false;
+		}
 	}
+	else
+		*dataType = DataType::None;
+
 }
 
+void MapLoader::processContinents(string line, DataType* dataType)
+{
+	vector<string> words = split(line);
+	Continent* continent = new Continent();
+	if (words.size() > 0)
+	{
+		if (words.size() != 3)
+			validityData->validData = false;
+		continent->name = words[0];
+		int index;
+		try {
+			continent->armyValue = stoi(words[1]);
+		}
+		catch (invalid_argument)
+		{
+			cout << "failure reading integer" << endl;
+			validityData->validData = false;
+		}
+		generatedMap->continents.push_back(continent);
+		continentsMap->insert(pair<int, Continent*>(generatedMap->continents.size(), continent));
+	}
+	else
+		*dataType = DataType::None;
+}
+
+void MapLoader::processTerritories(string line, DataType* dataType)
+{
+	Territory* territory = new Territory();
+	vector<string> words = split(line);
+	if (words.size() > 0)
+	{
+		if (words.size() < 3)
+			validityData->validData = false;
+		territory->name = words[1];
+		try {
+			map<int, Continent*>::iterator it;
+			it = continentsMap->find(stoi(words[2]));
+			if (it != continentsMap->end())
+				it->second->territories.push_back(territory);
+			else
+			{
+				validityData->validData = false;
+				cout << "Iterator not found for continent: " << stoi(words[2]) << endl;
+			}
+
+
+			generatedMap->territories.push_back(territory);
+			territoriesMap->insert(pair<int, Territory*>(stoi(words[0]), territory));
+
+		}
+		catch (invalid_argument)
+		{
+			cout << "failure reading integer" << endl;
+			validityData->validData = false;
+		}
+	}
+	else
+		*dataType = DataType::None;
+}
 void MapLoader::readFile(string path) {
 	string line;
 	ifstream myfile(path);
@@ -169,7 +159,20 @@ void MapLoader::readFile(string path) {
 				}
 			}
 			else
-				handleData(line, dataType);
+			{
+				switch (dataType)
+				{
+				case(DataType::Continents):
+					processContinents(line, &dataType);
+					break;
+				case(DataType::Territories):
+					processTerritories(line, &dataType);
+					break;
+				case(DataType::Borders):
+					processBorders(line, &dataType);
+					break;
+				}
+			}
 		}
 		myfile.close();
 	}
@@ -188,8 +191,6 @@ Map* MapLoader::GenerateMap(string filePath)
 		cout << "This is not a valid map" << endl;
 	return generatedMap;
 }
-
-
 
 
 MapLoader::MapLoader()

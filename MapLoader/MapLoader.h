@@ -84,8 +84,10 @@ private:
 	map<int, Continent*>* continentsMap;
 	int countinentsCount;
 	ValidityData* validityData;
-	vector<string> split(string line);
-	void handleData(string line, DataType dataType);
+	vector<string> split(string line) const;
+	void processContinents(string line, DataType* dataType);
+	void processTerritories(string line, DataType* dataType);
+	void processBorders(string line, DataType* dataType);
 	void readFile(string path);
 
 };
