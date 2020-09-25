@@ -6,7 +6,7 @@
 #include <string>
 using namespace std;
 
-/ class Continent;
+class Continent;
 class Territory {
  public:
   string name;
