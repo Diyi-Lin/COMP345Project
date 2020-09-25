@@ -64,7 +64,7 @@ private:
 		bool bordersFound = false;
 		bool validData = true;
 
-		inline bool isValid()
+		inline bool IsValid()
 		{
 			return filesFound && continentsFound && territoriesFound && bordersFound && validData;
 		}
@@ -83,11 +83,11 @@ private:
 	map<int, Continent*>* continentsMap;
 	int countinentsCount;
 	ValidityData* validityData;
-	vector<string> split(string line) const;
-	void processContinents(string line, DataType* dataType);
-	void processTerritories(string line, DataType* dataType);
-	void processBorders(string line, DataType* dataType);
-	void readFile(string path);
+	vector<string> Split(string line) const;
+	void ProcessContinents(string line, DataType* dataType);
+	void ProcessTerritories(string line, DataType* dataType);
+	void ProcessBorders(string line, DataType* dataType);
+	void ReadFile(string path);
 
 };
 
