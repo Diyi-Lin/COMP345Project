@@ -1,17 +1,25 @@
-// #define MAP_LOADER_DRIVER
-#ifdef MAP_LOADER_DRIVER
 #include "MapLoader.h"
 
-int main()
-{
-	MapLoader* ml = new MapLoader();
-	string input;
-	cout << "Please enter a file name/path for a .map file to generate a map: ";
-	cin >> input;
-	Map* map = ml->GenerateMap(input);
-	delete ml;
-	map->print();
-	//Map* map = ml.GenerateMap("canada.map");
-	return 0;
+#define MAP_LOADER_DRIVER
+#ifdef MAP_LOADER_DRIVER
+int main() {
+  MapLoader* ml = new MapLoader();
+  std::string input;
+
+  Map* map = ml->GenerateMap("MapFiles/canada.map");
+  delete ml;
+  for (auto x : map->GetContinents()) {
+    std::cout << x->GetName() << std::endl;
+    for (auto y : *x->GetTerritories()) {
+      std::cout << *y->GetName() <<  std::endl;
+      std::cout <<"NEIGHBORS**: ";
+      for (auto z : *y->GetNeighbors()) {
+        std::cout << *z->GetName() << ", "; 
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "-------------------------------------------------\n" << std::endl;
+  }
+  return 0;
 }
 #endif
