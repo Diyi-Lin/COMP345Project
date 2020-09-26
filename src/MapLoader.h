@@ -1,47 +1,15 @@
 #pragma once
+#include "Map.h"
 #include <fstream>
 #include <iostream>
-#include <map>
 #include <regex>
-#include <string>
-using namespace std;
 
-class Continent;
-class Territory {
- public:
-  string name;
-  Continent* continent;
-  vector<Territory*> neighbors;
-};
-class Continent {
- public:
-  string name;
-  int armyValue;
-  vector<Territory*> territories;
-};
-class Map {
- public:
-  vector<Territory*> territories;
-  vector<Continent*> continents;
-  void print() {
-    for (auto x : continents) {
-      cout << "Continent: " << x->name << endl;
-      for (auto y : x->territories) {
-        cout << "Territory: " << y->name << endl;
-        for (auto z : y->neighbors) cout << " Neighbor " << z->name;
-        cout << endl;
-      }
-      cout << "---------------------------------" << endl;
-      cout << endl;
-    }
-  }
-};
 
 class MapLoader {
  public:
   MapLoader();
   ~MapLoader();
-  Map* GenerateMap(string filePath);
+  Map* GenerateMap(std::string filePath);
 
  private:
   struct ValidityData {
@@ -60,13 +28,19 @@ class MapLoader {
   enum DataType { Continents = 0, Territories, Borders, None };
 
   Map* generatedMap;
-  map<int, Territory*>* territoriesMap;
-  map<int, Continent*>* continentsMap;
-  int countinentsCount;
+  std::vector<Continent*> continents; 
+  int continentsCount;
+  int index;
+  int territoriesCount;
+  int* continentsSizes;
+  int* neighborsSizes;
   ValidityData* validityData;
-  vector<string> Split(string line) const;
-  void ProcessContinents(string line, DataType* dataType);
-  void ProcessTerritories(string line, DataType* dataType);
-  void ProcessBorders(string line, DataType* dataType);
-  void ReadFile(string path);
+  std::vector<std::string> Split(std::string line) const;
+  void PreprocessContinents(std::string line, DataType* dataType);
+  void PreprocessTerritories(std::string line, DataType* dataType);
+  void PreprocessBorders(std::string line, DataType* dataType);
+  void ProcessContinents(std::string line, DataType* dataType);
+  void ProcessTerritories(std::string line, DataType* dataType);
+  void ProcessBorders(std::string line, DataType* dataType);
+  void ReadFile(std::string path);
 };
