@@ -1,56 +1,152 @@
 #pragma once
-#include <vector>
-#include <iostream>
 
-using namespace std;
+#include <iostream>
+#include <vector>
+
+#include "Map.h"
+#include "Player.h"
 
 class Order {
-public:
-	Order();
-	Order(const Order& toCopy);
-	~Order();
+ public:
+  Order();
+  Order(Player* player);
+  virtual ~Order() = 0;
+  Order& operator=(const Order& rightSide);
 
-	bool validate();
-	void execute();
+  virtual bool validate() = 0;
+  virtual void execute() = 0;
 
-	friend ostream& operator <<(ostream& outs, const Order& toOutput);
+  friend std::ostream& operator<<(std::ostream& outs, const Order& toOutput);
+
+ protected:
+  Player* player;
+  bool wasExecuted{false};
 };
 
+// Deploy armies to one of player's territories
 class Deploy : public Order {
+ public:
+  Deploy();
+  Deploy(Player* player, Territory* territory);
+  Deploy(const Deploy& toCopy);
+  ~Deploy();
+  Deploy& operator=(const Deploy& rightSide);
 
+  virtual bool validate();
+  virtual void execute();
+
+ private:
+  Territory* territoryToDeploy;
 };
 
+// Advance armies from source to target territories, attacking if needed
 class Advance : public Order {
+ public:
+  Advance();
+  Advance(Player* player, Territory* sourceTerritory,
+          Territory* targetTerritory);
+  Advance(const Advance& toCopy);
+  ~Advance();
+  Advance& operator=(const Advance& rightSide);
 
+  virtual bool validate();
+  virtual void execute();
+
+ private:
+  Territory* sourceTerritory;
+  Territory* targetTerritory;
 };
 
+// Bomb an opponent's adjacent territory
 class Bomb : public Order {
+ public:
+  Bomb();
+  Bomb(Player* player, Territory* sourceTerritory, Territory* targetTerritory);
+  Bomb(const Bomb& toCopy);
+  ~Bomb();
+  Bomb& operator=(const Bomb& rightSide);
 
+  virtual bool validate();
+  virtual void execute();
+
+ private:
+  Territory* sourceTerritory;
+  Territory* targetTerritory;
 };
 
+// Triple armies on one of player's territories, making it neutral
 class Blockade : public Order {
+ public:
+  Blockade();
+  Blockade(Player* player, Territory* territoryToBlockade);
+  Blockade(const Blockade& toCopy);
+  ~Blockade();
+  Blockade& operator=(const Blockade& rightSide);
 
+  virtual bool validate();
+  virtual void execute();
+
+ private:
+  Territory* territoryToBlockade;
 };
 
+// Negotiate peace for a turn between player and opponent
 class Negotiate : public Order {
+ public:
+  Negotiate();
+  Negotiate(Player* player, Player* opponent);
+  Negotiate(const Negotiate& toCopy);
+  ~Negotiate();
+  Negotiate& operator=(const Negotiate& rightSide);
 
+  virtual bool validate();
+  virtual void execute();
+
+ private:
+  Player* opponent;
 };
 
+// Advance armies from a player's territory to any territory
 class Airlift : public Order {
+ public:
+  Airlift();
+  Airlift(Player* player, Territory* sourceTerritory,
+          Territory* targetTerritory);
+  Airlift(const Airlift& toCopy);
+  ~Airlift();
+  Airlift& operator=(const Airlift& rightSide);
 
+  virtual bool validate();
+  virtual void execute();
+
+ private:
+  Territory* sourceTerritory;
+  Territory* targetTerritory;
 };
 
 class OrdersList {
-public:
-	OrdersList();
-	OrdersList(const OrdersList& toCopy);
-	~OrdersList();
+ public:
+  OrdersList();
+  OrdersList(const OrdersList& toCopy);
+  ~OrdersList();
+  OrdersList& operator=(const OrdersList& rightSide);
 
-	void queue(Order o);
-	void move(Order o);
-	void remove(Order o); // Used remove instead of delete b/c delete is a reserved keyword which caused an error
-	
-	friend ostream& operator <<(ostream& outs, const OrdersList& toOutput);
-private:
-	std::vector<Order> *ordersList;
+  // Add an order to the end of the orders list
+  void queue(Order* o);
+
+  // Takes order at position orderPosition and moves it at newOrderPosition,
+  // shifting other orders accordingly Position" is 1-indexed instead of
+  // 0-indexed (more intuitive to the player)
+  void move(int orderPosition, int newOrderPosition);
+
+  // Removes the order at position (i.e. 1-indexed) in the list
+  // Method is called remove instead of delete b/c delete is a
+  // reserved keyword, which drove Visual Studio nuts
+  void remove(int position);
+
+  friend std::ostream& operator<<(std::ostream& outs,
+                                  const OrdersList& toOutput);
+
+ private:
+  std::vector<Order*>* ordersList;
 };
