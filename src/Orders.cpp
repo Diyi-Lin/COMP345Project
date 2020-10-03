@@ -1,5 +1,7 @@
 #include "Orders.h"
 
+#include <algorithm>
+
 // Orders List
 OrdersList::OrdersList() : ordersList() {}
 
@@ -20,7 +22,8 @@ OrdersList::~OrdersList() {
 }
 
 OrdersList& OrdersList::operator=(const OrdersList& rightSide) {
-  // TODO: insert return statement here
+  ordersList = rightSide.ordersList;
+  return *this;
 }
 
 std::ostream& operator<<(std::ostream& outs, const OrdersList& toOutput) {
@@ -42,9 +45,21 @@ Order::Order() : player() {}
 
 Order::Order(Player* player) { this->player = player; }
 
+Order::Order(const Order& toCopy) {
+  player = toCopy.player;
+  wasExecuted = toCopy.wasExecuted;
+}
+
 Order& Order::operator=(const Order& rightSide) {
-  // TODO: insert return statement here
+  player = rightSide.player;
+  wasExecuted = rightSide.wasExecuted;
   return *this;
+}
+
+bool Order::areAdjacent(Territory* source, Territory* target) {
+  std::vector<Territory*>* neighborsOfSource = source->GetNeighbors();
+  return std::any_of(neighborsOfSource->begin(), neighborsOfSource->end(),
+                     [target](Territory* t) { return (t == target); });
 }
 
 Deploy::Deploy() : Order(), territoryToDeploy() {}
@@ -54,8 +69,7 @@ Deploy::Deploy(Player* player, Territory* territory) : Order(player) {
   this->territoryToDeploy = territory;
 }
 
-Deploy::Deploy(const Deploy& toCopy) {
-  this->player = toCopy.player;
+Deploy::Deploy(const Deploy& toCopy) : Order(toCopy) {
   this->territoryToDeploy = toCopy.territoryToDeploy;
 }
 
@@ -74,7 +88,7 @@ void Deploy::execute() {
     return;
   }
   wasExecuted = true;
-  std::cout << "Execute deploy\n";
+  std::cout << "Deploying armies into some territory.\n";
 }
 
 Advance::Advance() : Order(), sourceTerritory(), targetTerritory() {}
@@ -85,23 +99,31 @@ Advance::Advance(Player* player, Territory* sourceTerritory,
   this->sourceTerritory = sourceTerritory;
   this->targetTerritory = targetTerritory;
 }
-Advance::Advance(const Advance& toCopy) {}
+Advance::Advance(const Advance& toCopy) : Order(toCopy) {
+  this->sourceTerritory = toCopy.sourceTerritory;
+  this->targetTerritory = toCopy.targetTerritory;
+}
 
 Advance::~Advance() {}
 
 Advance& Advance::operator=(const Advance& rightSide) {
-  // TODO: insert return statement here
+  Order::operator=(rightSide);
+  sourceTerritory = rightSide.sourceTerritory;
+  targetTerritory = rightSide.targetTerritory;
   return *this;
 }
 
-bool Advance::validate() { return true; }
+bool Advance::validate() {
+  // Check if source and target territories are neighbors
+  return Order::areAdjacent(sourceTerritory, targetTerritory);
+}
 
 void Advance::execute() {
   if (!validate()) {
     return;
   }
   wasExecuted = true;
-  std::cout << "Execute advance\n";
+  std::cout << "Advancing into another territory.\n";
 }
 
 Bomb::Bomb() : Order(), sourceTerritory(), targetTerritory() {}
@@ -113,18 +135,34 @@ Bomb::Bomb(Player* player, Territory* sourceTerritory,
   this->targetTerritory = targetTerritory;
 }
 
-Bomb::Bomb(const Bomb& toCopy) {}
+Bomb::Bomb(const Bomb& toCopy) : Order(toCopy) {
+  this->sourceTerritory = toCopy.sourceTerritory;
+  this->targetTerritory = toCopy.targetTerritory;
+}
 
 Bomb::~Bomb() {}
 
-bool Bomb::validate() { return true; }
+Bomb& Bomb::operator=(const Bomb& rightSide) {
+  Order::operator=(rightSide);
+  sourceTerritory = rightSide.sourceTerritory;
+  targetTerritory = rightSide.targetTerritory;
+  return *this;
+}
+
+bool Bomb::validate() {
+  // Check that territories are adjacent and that target
+  // does not belong to player
+  bool areAdjacent = Order::areAdjacent(sourceTerritory, targetTerritory);
+  bool targetDoesntBelongToPlayer = (targetTerritory->GetPlayer() != player);
+  return (areAdjacent && targetDoesntBelongToPlayer);
+}
 
 void Bomb::execute() {
   if (!validate()) {
     return;
   }
   wasExecuted = true;
-  std::cout << "Execute bomb\n";
+  std::cout << "Bombing an adjacent territory.\n";
 }
 
 Blockade::Blockade() : Order(), territoryToBlockade() {}
@@ -134,23 +172,29 @@ Blockade::Blockade(Player* player, Territory* territoryToBlockade)
   this->territoryToBlockade = territoryToBlockade;
 }
 
-Blockade::Blockade(const Blockade& toCopy) {}
+Blockade::Blockade(const Blockade& toCopy) : Order(toCopy) {
+  this->territoryToBlockade = toCopy.territoryToBlockade;
+}
 
 Blockade::~Blockade() {}
 
 Blockade& Blockade::operator=(const Blockade& rightSide) {
-  // TODO: insert return statement here
+  Order::operator=(rightSide);
+  territoryToBlockade = rightSide.territoryToBlockade;
   return *this;
 }
 
-bool Blockade::validate() { return true; }
+bool Blockade::validate() {
+  // Check that the territory belongs to player
+  return (territoryToBlockade->GetPlayer() == player);
+}
 
 void Blockade::execute() {
   if (!validate()) {
     return;
   }
   wasExecuted = true;
-  std::cout << "Execute blockade\n";
+  std::cout << "Blockading a territory.\n";
 }
 
 Negotiate::Negotiate() : Order(), opponent() {}
@@ -159,23 +203,29 @@ Negotiate::Negotiate(Player* player, Player* opponent) : Order(player) {
   this->opponent = opponent;
 }
 
-Negotiate::Negotiate(const Negotiate& toCopy) {}
+Negotiate::Negotiate(const Negotiate& toCopy) : Order(toCopy) {
+  this->opponent = toCopy.opponent;
+}
 
 Negotiate::~Negotiate() {}
 
 Negotiate& Negotiate::operator=(const Negotiate& rightSide) {
-  // TODO: insert return statement here
+  Order::operator=(rightSide);
+  opponent = rightSide.opponent;
   return *this;
 }
 
-bool Negotiate::validate() { return true; }
+bool Negotiate::validate() {
+  // Check that the players negotiating aren't the same
+  return player != opponent;
+}
 
 void Negotiate::execute() {
   if (!validate()) {
     return;
   }
   wasExecuted = true;
-  std::cout << "Execute negotiate\n";
+  std::cout << "A peace deal was striken.\n";
 }
 
 Airlift::Airlift() : Order(), sourceTerritory(), targetTerritory() {}
@@ -187,21 +237,30 @@ Airlift::Airlift(Player* player, Territory* sourceTerritory,
   this->targetTerritory = targetTerritory;
 }
 
-Airlift::Airlift(const Airlift& toCopy) {}
+Airlift::Airlift(const Airlift& toCopy) : Order(toCopy) {
+  this->sourceTerritory = toCopy.sourceTerritory;
+  this->targetTerritory = toCopy.targetTerritory;
+}
 
 Airlift::~Airlift() {}
 
 Airlift& Airlift::operator=(const Airlift& rightSide) {
-  // TODO: insert return statement here
+  Order::operator=(rightSide);
+  sourceTerritory = rightSide.sourceTerritory;
+  targetTerritory = rightSide.targetTerritory;
   return *this;
 }
 
-bool Airlift::validate() { return true; }
+bool Airlift::validate() {
+  // Not really sure how to validate this order
+  // Checks if the territories are defined for now
+  return (sourceTerritory->GetPlayer() == player && targetTerritory != NULL);
+}
 
 void Airlift::execute() {
   if (!validate()) {
     return;
   }
   wasExecuted = true;
-  std::cout << "Execute airlift\n";
+  std::cout << "Airlifting into another territory!\n";
 }

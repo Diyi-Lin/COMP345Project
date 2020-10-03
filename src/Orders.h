@@ -10,6 +10,7 @@ class Order {
  public:
   Order();
   Order(Player* player);
+  Order(const Order& toCopy);
   virtual ~Order() = 0;
   Order& operator=(const Order& rightSide);
 
@@ -18,6 +19,7 @@ class Order {
 
   friend std::ostream& operator<<(std::ostream& outs, const Order& toOutput);
 
+  static bool areAdjacent(Territory* source, Territory* target);
  protected:
   Player* player;
   bool wasExecuted{false};
