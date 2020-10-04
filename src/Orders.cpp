@@ -5,11 +5,9 @@
 // Orders List
 OrdersList::OrdersList() : ordersList() {}
 
-OrdersList::OrdersList(const OrdersList& toCopy) : ordersList() {
-  for (Order* o : *toCopy.ordersList) {
-    // TODO create a copy of each Order
-    // Must take subtype into account
-  }
+OrdersList::OrdersList(const OrdersList& toCopy) {
+  // TODO implement copy constructor correctly
+  ordersList = toCopy.ordersList;
 }
 
 OrdersList::~OrdersList() {
@@ -34,11 +32,27 @@ std::ostream& operator<<(std::ostream& outs, const OrdersList& toOutput) {
 void OrdersList::queue(Order* order) { ordersList->push_back(order); }
 
 void OrdersList::move(int orderPosition, int newOrderPosition) {
-  orderPosition += 1;
-  newOrderPosition += 1;
+  if (orderPosition < 1 || orderPosition > ordersList->size()) {
+    return;
+  }
+  int orderIndex{orderPosition - 1};
+  int newOrderIndex{newOrderPosition - 1};
+  newOrderIndex = std::min(std::max(newOrderIndex, 0), (int)ordersList->size());
+
+  Order* toMove = (*ordersList)[orderIndex];
+  ordersList->erase(ordersList->begin() + orderIndex);
+  ordersList->insert(ordersList->begin() + newOrderIndex, toMove);
 }
 
-void OrdersList::remove(int position) { position += 1; }
+// Position is 1-indexed instead of 0-indexed
+// to make it more intuitive for users
+void OrdersList::remove(int position) {
+  if (position < 1 || position > ordersList->size()) {
+    return;
+  }
+  // Remove 1 to account for position being 1-indexed
+  ordersList->erase(ordersList->begin() + position - 1);
+}
 
 // Orders
 Order::Order() : player() {}
@@ -62,6 +76,27 @@ bool Order::areAdjacent(Territory* source, Territory* target) {
                      [target](Territory* t) { return (t == target); });
 }
 
+std::ostream& operator<<(std::ostream& out, const Order& toOutput) {
+  out << "Abstract order class, this shouldn't be called";
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const Negotiate& toOutput) {
+  out << "Negotiate order.";
+  if (toOutput.wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const Airlift& toOutput) {
+  out << "Airlift order.";
+  if (toOutput.wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
+}
+
 Deploy::Deploy() : Order(), territoryToDeploy() {}
 
 Deploy::Deploy(Player* player, Territory* territory) : Order(player) {
@@ -80,6 +115,14 @@ Deploy& Deploy::operator=(const Deploy& rightSide) {
 }
 
 Deploy::~Deploy() {}
+
+std::ostream& operator<<(std::ostream& out, const Deploy& toOutput) {
+  out << "Deploy order.";
+  if (toOutput.wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
+}
 
 bool Deploy::validate() { return (territoryToDeploy->GetPlayer() == player); }
 
@@ -149,6 +192,14 @@ Bomb& Bomb::operator=(const Bomb& rightSide) {
   return *this;
 }
 
+std::ostream& operator<<(std::ostream& out, const Bomb& toOutput) {
+  out << "Bomb order.";
+  if (toOutput.wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
+}
+
 bool Bomb::validate() {
   // Check that territories are adjacent and that target
   // does not belong to player
@@ -182,6 +233,14 @@ Blockade& Blockade::operator=(const Blockade& rightSide) {
   Order::operator=(rightSide);
   territoryToBlockade = rightSide.territoryToBlockade;
   return *this;
+}
+
+std::ostream& operator<<(std::ostream& out, const Blockade& toOutput) {
+  out << "Blockade order.";
+  if (toOutput.wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
 }
 
 bool Blockade::validate() {
@@ -249,6 +308,14 @@ Airlift& Airlift::operator=(const Airlift& rightSide) {
   sourceTerritory = rightSide.sourceTerritory;
   targetTerritory = rightSide.targetTerritory;
   return *this;
+}
+
+std::ostream& operator<<(std::ostream& out, const Advance& toOutput) {
+  out << "Advance order.";
+  if (toOutput.wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
 }
 
 bool Airlift::validate() {

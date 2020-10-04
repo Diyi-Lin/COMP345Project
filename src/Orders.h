@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 #include "Map.h"
 #include "Player.h"
@@ -17,9 +18,12 @@ class Order {
   virtual bool validate() = 0;
   virtual void execute() = 0;
 
-  friend std::ostream& operator<<(std::ostream& outs, const Order& toOutput);
+  friend std::ostream& operator<<(std::ostream& out, const Order& toOutput);
 
+  // Helper function to know if two territories are adjacent
+  // Put this here atm but should probably be moved to map functionnalities
   static bool areAdjacent(Territory* source, Territory* target);
+
  protected:
   Player* player;
   bool wasExecuted{false};
@@ -33,6 +37,8 @@ class Deploy : public Order {
   Deploy(const Deploy& toCopy);
   ~Deploy();
   Deploy& operator=(const Deploy& rightSide);
+
+  friend std::ostream& operator<<(std::ostream& out, const Deploy& toOutput);
 
   virtual bool validate();
   virtual void execute();
@@ -51,6 +57,8 @@ class Advance : public Order {
   ~Advance();
   Advance& operator=(const Advance& rightSide);
 
+  friend std::ostream& operator<<(std::ostream& out, const Advance& toOutput);
+
   virtual bool validate();
   virtual void execute();
 
@@ -67,6 +75,8 @@ class Bomb : public Order {
   Bomb(const Bomb& toCopy);
   ~Bomb();
   Bomb& operator=(const Bomb& rightSide);
+
+  friend std::ostream& operator<<(std::ostream& out, const Bomb& toOutput);
 
   virtual bool validate();
   virtual void execute();
@@ -85,6 +95,8 @@ class Blockade : public Order {
   ~Blockade();
   Blockade& operator=(const Blockade& rightSide);
 
+  friend std::ostream& operator<<(std::ostream& out, const Blockade& toOutput);
+
   virtual bool validate();
   virtual void execute();
 
@@ -100,6 +112,8 @@ class Negotiate : public Order {
   Negotiate(const Negotiate& toCopy);
   ~Negotiate();
   Negotiate& operator=(const Negotiate& rightSide);
+
+  friend std::ostream& operator<<(std::ostream& out, const Negotiate& toOutput);
 
   virtual bool validate();
   virtual void execute();
@@ -117,6 +131,8 @@ class Airlift : public Order {
   Airlift(const Airlift& toCopy);
   ~Airlift();
   Airlift& operator=(const Airlift& rightSide);
+
+  friend std::ostream& operator<<(std::ostream& out, const Airlift& toOutput);
 
   virtual bool validate();
   virtual void execute();
