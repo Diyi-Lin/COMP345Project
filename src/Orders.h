@@ -12,7 +12,7 @@ class Order {
   Order();
   Order(Player* player);
   Order(const Order& toCopy);
-  virtual ~Order() = 0;
+  virtual ~Order();
   Order& operator=(const Order& rightSide);
 
   virtual bool validate() = 0;

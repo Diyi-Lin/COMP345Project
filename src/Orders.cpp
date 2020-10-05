@@ -64,6 +64,8 @@ Order::Order(const Order& toCopy) {
   wasExecuted = toCopy.wasExecuted;
 }
 
+Order::~Order() {}
+
 Order& Order::operator=(const Order& rightSide) {
   player = rightSide.player;
   wasExecuted = rightSide.wasExecuted;
