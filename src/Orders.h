@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Map.h"
 #include "Player.h"
@@ -27,6 +27,9 @@ class Order {
  protected:
   Player* player;
   bool wasExecuted{false};
+
+ private:
+  virtual std::ostream& doPrint(std::ostream& out) const = 0;
 };
 
 // Deploy armies to one of player's territories
@@ -38,13 +41,13 @@ class Deploy : public Order {
   ~Deploy();
   Deploy& operator=(const Deploy& rightSide);
 
-  friend std::ostream& operator<<(std::ostream& out, const Deploy& toOutput);
-
+  // friend std::ostream& operator<<(std::ostream& out, const Deploy& toOutput);
   virtual bool validate();
   virtual void execute();
 
  private:
   Territory* territoryToDeploy;
+  virtual std::ostream& doPrint(std::ostream& out) const;
 };
 
 // Advance armies from source to target territories, attacking if needed
@@ -65,6 +68,7 @@ class Advance : public Order {
  private:
   Territory* sourceTerritory;
   Territory* targetTerritory;
+  virtual std::ostream& doPrint(std::ostream& out) const;
 };
 
 // Bomb an opponent's adjacent territory
@@ -84,6 +88,7 @@ class Bomb : public Order {
  private:
   Territory* sourceTerritory;
   Territory* targetTerritory;
+  virtual std::ostream& doPrint(std::ostream& out) const;
 };
 
 // Triple armies on one of player's territories, making it neutral
@@ -102,6 +107,7 @@ class Blockade : public Order {
 
  private:
   Territory* territoryToBlockade;
+  virtual std::ostream& doPrint(std::ostream& out) const;
 };
 
 // Negotiate peace for a turn between player and opponent
@@ -120,6 +126,7 @@ class Negotiate : public Order {
 
  private:
   Player* opponent;
+  virtual std::ostream& doPrint(std::ostream& out) const;
 };
 
 // Advance armies from a player's territory to any territory
@@ -140,6 +147,7 @@ class Airlift : public Order {
  private:
   Territory* sourceTerritory;
   Territory* targetTerritory;
+  virtual std::ostream& doPrint(std::ostream& out) const;
 };
 
 class OrdersList {

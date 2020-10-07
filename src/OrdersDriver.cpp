@@ -1,15 +1,15 @@
-#define ORDERS_DRIVER
-
+//#define ORDERS_DRIVER
 
 #ifdef ORDERS_DRIVER
 #include <string>
+#include <iostream>
 
 #include "Map.h"
 #include "Orders.h"
 #include "Player.h"
 
 int main() {
-  // Create some players and territories to carry the tests on
+  // Create some players and territories to do the tests
   Player *player = new Player();
   Player *opponent = new Player();
   Territory *playerTerritory =
@@ -22,8 +22,9 @@ int main() {
   opponentTerritory->AddNeighbor(playerTerritory);
 
   // Test the orders
+  std::cout << "Testing the orders:" << std::endl << std::endl;
   Order *deploy = new Deploy(player, playerTerritory);
-  Order *advance = new Advance(player, playerTerritory, opponentTerritory);
+  Advance *advance = new Advance(player, playerTerritory, opponentTerritory);
   Order *bomb = new Bomb(player, playerTerritory, opponentTerritory);
   Order *blockade = new Blockade(player, playerTerritory);
   Order *negotiate = new Negotiate(player, opponent);
@@ -43,6 +44,11 @@ int main() {
   airlift->execute();
 
   // Test the orders list
+  std::cout << std::endl
+            << "===" << std::endl
+            << std::endl
+            << "Testing the orders list" << std::endl;
+
   OrdersList *ordersList = new OrdersList();
   ordersList->queue(deploy);
   ordersList->queue(advance);
@@ -51,23 +57,40 @@ int main() {
   ordersList->queue(negotiate);
   ordersList->queue(airlift);
 
+  std::cout << *ordersList << std::endl;
+
+  // Move orders within the list
+  // Expected after move: Bomb, Advance, Deploy, Negotiate, Blockade, Airlift
   ordersList->move(1, 4);
   ordersList->move(3, 5);
   ordersList->move(2, 1);
+
+  std::cout << *ordersList << std::endl;
+
+  // Remove orders
+  // Expected: Bomb, Deploy, Negotiate, Blockade
   ordersList->remove(2);
   ordersList->remove(5);
 
+  std::cout << *ordersList << std::endl;
+
+  // Finish the tests, delete everything
+  // Note that the orderslist takes care of
+  // deleting the orders it contains
+  delete ordersList;
   delete player;
   delete opponent;
   delete playerTerritory;
   delete opponentTerritory;
-  delete deploy;
-  delete advance;
-  delete bomb;
-  delete blockade;
-  delete negotiate;
-  delete airlift;
-  delete ordersList;
+
+  // Take care of dangling pointers as well?
+  // Not sure if necessary as the program stops after but just in case
+  ordersList = nullptr;
+  player = nullptr;
+  opponent = nullptr;
+  playerTerritory = nullptr;
+  opponentTerritory = nullptr;
+
   return 0;
 };
 #endif

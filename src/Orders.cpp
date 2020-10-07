@@ -3,7 +3,7 @@
 #include <algorithm>
 
 // Orders List
-OrdersList::OrdersList() : ordersList() {}
+OrdersList::OrdersList() { ordersList = new std::vector<Order*>(); }
 
 OrdersList::OrdersList(const OrdersList& toCopy) {
   // TODO implement copy constructor correctly
@@ -11,12 +11,14 @@ OrdersList::OrdersList(const OrdersList& toCopy) {
 }
 
 OrdersList::~OrdersList() {
-  for (auto o : *ordersList) {
-    delete o;
+  // The orders don't really deserve an existence outside of the orders list
+  // so we'll delete them on the orders list's destruction
+  for (auto order : *ordersList) {
+    delete order;
   }
   ordersList->clear();
   delete ordersList;
-  ordersList = NULL;
+  ordersList = nullptr;
 }
 
 OrdersList& OrdersList::operator=(const OrdersList& rightSide) {
@@ -25,7 +27,12 @@ OrdersList& OrdersList::operator=(const OrdersList& rightSide) {
 }
 
 std::ostream& operator<<(std::ostream& outs, const OrdersList& toOutput) {
-  outs << "Orders list with " << toOutput.ordersList->size() << " orders\n";
+  std::vector<Order*>* ordersList = toOutput.ordersList;
+  outs << "Orders list containing :" << std::endl;
+  for (std::vector<Order*>::iterator it = ordersList->begin();
+       it != ordersList->end(); ++it) {
+    std::cout << *(*it) << std::endl;
+  }
   return outs;
 }
 
@@ -79,24 +86,7 @@ bool Order::areAdjacent(Territory* source, Territory* target) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Order& toOutput) {
-  out << "Abstract order class, this shouldn't be called";
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const Negotiate& toOutput) {
-  out << "Negotiate order.";
-  if (toOutput.wasExecuted) {
-    out << " This order was executed, its effect was {effect}.";
-  }
-  return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const Airlift& toOutput) {
-  out << "Airlift order.";
-  if (toOutput.wasExecuted) {
-    out << " This order was executed, its effect was {effect}.";
-  }
-  return out;
+  return toOutput.doPrint(out);
 }
 
 Deploy::Deploy() : Order(), territoryToDeploy() {}
@@ -118,14 +108,6 @@ Deploy& Deploy::operator=(const Deploy& rightSide) {
 
 Deploy::~Deploy() {}
 
-std::ostream& operator<<(std::ostream& out, const Deploy& toOutput) {
-  out << "Deploy order.";
-  if (toOutput.wasExecuted) {
-    out << " This order was executed, its effect was {effect}.";
-  }
-  return out;
-}
-
 bool Deploy::validate() { return (territoryToDeploy->GetPlayer() == player); }
 
 void Deploy::execute() {
@@ -134,6 +116,14 @@ void Deploy::execute() {
   }
   wasExecuted = true;
   std::cout << "Deploying armies into some territory.\n";
+}
+
+std::ostream& Deploy::doPrint(std::ostream& out) const {
+  out << "Deploy order.";
+  if (wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
 }
 
 Advance::Advance() : Order(), sourceTerritory(), targetTerritory() {}
@@ -171,6 +161,18 @@ void Advance::execute() {
   std::cout << "Advancing into another territory.\n";
 }
 
+std::ostream& Advance::doPrint(std::ostream& out) const {
+  out << "Advance order.";
+  if (wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const Advance& toOutput) {
+  return toOutput.doPrint(out);
+}
+
 Bomb::Bomb() : Order(), sourceTerritory(), targetTerritory() {}
 
 Bomb::Bomb(Player* player, Territory* sourceTerritory,
@@ -195,11 +197,7 @@ Bomb& Bomb::operator=(const Bomb& rightSide) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Bomb& toOutput) {
-  out << "Bomb order.";
-  if (toOutput.wasExecuted) {
-    out << " This order was executed, its effect was {effect}.";
-  }
-  return out;
+  return toOutput.doPrint(out);
 }
 
 bool Bomb::validate() {
@@ -216,6 +214,14 @@ void Bomb::execute() {
   }
   wasExecuted = true;
   std::cout << "Bombing an adjacent territory.\n";
+}
+
+std::ostream& Bomb::doPrint(std::ostream& out) const {
+  out << "Bomb order.";
+  if (wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
 }
 
 Blockade::Blockade() : Order(), territoryToBlockade() {}
@@ -238,11 +244,7 @@ Blockade& Blockade::operator=(const Blockade& rightSide) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Blockade& toOutput) {
-  out << "Blockade order.";
-  if (toOutput.wasExecuted) {
-    out << " This order was executed, its effect was {effect}.";
-  }
-  return out;
+  return toOutput.doPrint(out);
 }
 
 bool Blockade::validate() {
@@ -256,6 +258,14 @@ void Blockade::execute() {
   }
   wasExecuted = true;
   std::cout << "Blockading a territory.\n";
+}
+
+std::ostream& Blockade::doPrint(std::ostream& out) const {
+  out << "Blockade order.";
+  if (wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
 }
 
 Negotiate::Negotiate() : Order(), opponent() {}
@@ -289,6 +299,18 @@ void Negotiate::execute() {
   std::cout << "A peace deal was striken.\n";
 }
 
+std::ostream& Negotiate::doPrint(std::ostream& out) const {
+  out << "Negotiate order.";
+  if (wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const Negotiate& toOutput) {
+  return toOutput.doPrint(out);
+}
+
 Airlift::Airlift() : Order(), sourceTerritory(), targetTerritory() {}
 
 Airlift::Airlift(Player* player, Territory* sourceTerritory,
@@ -312,14 +334,6 @@ Airlift& Airlift::operator=(const Airlift& rightSide) {
   return *this;
 }
 
-std::ostream& operator<<(std::ostream& out, const Advance& toOutput) {
-  out << "Advance order.";
-  if (toOutput.wasExecuted) {
-    out << " This order was executed, its effect was {effect}.";
-  }
-  return out;
-}
-
 bool Airlift::validate() {
   // Not really sure how to validate this order
   // Checks if the territories are defined for now
@@ -332,4 +346,16 @@ void Airlift::execute() {
   }
   wasExecuted = true;
   std::cout << "Airlifting into another territory!\n";
+}
+
+std::ostream& Airlift::doPrint(std::ostream& out) const {
+  out << "Airlift order.";
+  if (wasExecuted) {
+    out << " This order was executed, its effect was {effect}.";
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const Airlift& toOutput) {
+  return toOutput.doPrint(out);
 }
