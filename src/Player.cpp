@@ -2,8 +2,8 @@
 
 // Default constructor
 Player::Player() : ownedTerritories(std::vector<Territory*>(0)), 
-    handOfCards(std::vector<Cards*>(0)), 
-    listOfOrders(std::vector<Orders*>(0)) 
+    handOfCards(std::vector<Card*>(0)), 
+    listOfOrders(std::vector<Order*>(0)) 
 {}
 // Parametric constructor
 Player::Player(std::vector<Territory*> terr) : ownedTerritories(terr) {}
@@ -80,7 +80,7 @@ std::vector<Territory*> Player::toAttack(Graph& graph) {
 // Creates an Order object and adds it to the vector of pointers of orders
 void Player::issueOrder() {
     // Creating a Deploy order
-    Orders* orderToIssue = new Deploy();
+    Order* orderToIssue = new Deploy();
     AddOrderToPlayer(orderToIssue);
 }
 
@@ -89,10 +89,10 @@ void Player::AddTerritoryToPlayer(Territory* territoryToAdd) {
     ownedTerritories.push_back(territoryToAdd);
 }
 // Adds the given card pointer to the vector of cards
-void Player::AddCardToPlayer(Cards* cardToAdd) {
+void Player::AddCardToPlayer(Card* cardToAdd) {
     handOfCards.push_back(cardToAdd);
 }
 // Adds the given order pointer to the vector of orders
-void Player::AddOrderToPlayer(Orders* orderToAdd) {
+void Player::AddOrderToPlayer(Order* orderToAdd) {
     listOfOrders.push_back(orderToAdd);
 }

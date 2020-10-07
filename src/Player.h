@@ -3,14 +3,18 @@
 #include "Cards.h"
 #include "Orders.h"
 
+class Order;
+class Territory;
+class Graph;
+
 class Player {
 private:
  // Vector of pointers of territories
  std::vector<Territory*> ownedTerritories;
  // Vector of pointers of cards
- std::vector<Cards*> handOfCards;
+ std::vector<Card*> handOfCards;
  // Vector of pointers of orders
- std::vector<Orders*> listOfOrders;
+ std::vector<Order*> listOfOrders;
 
 public:
  // Default constructor
@@ -35,6 +39,6 @@ public:
 
  // Additional methods
  void AddTerritoryToPlayer(Territory* territoryToAdd);
- void AddCardToPlayer(Cards* cardToAdd);
- void AddOrderToPlayer(Orders* orderToAdd);
+ void AddCardToPlayer(Card* cardToAdd);
+ void AddOrderToPlayer(Order* orderToAdd);
 };

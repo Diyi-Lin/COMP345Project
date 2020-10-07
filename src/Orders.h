@@ -7,6 +7,10 @@
 #include "Map.h"
 #include "Player.h"
 
+class Player;
+class Territory;
+class Graph;
+
 class Order {
  public:
   Order();

@@ -16,6 +16,7 @@
 #include "Player.h"
 
 class Territory;
+class Player;
 
 class Graph {
  private:
