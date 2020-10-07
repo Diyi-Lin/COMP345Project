@@ -6,11 +6,6 @@ std::vector<Territory*>* Graph::GetTerritories() { return &this->territories; }
 
 Territory::Territory(std::string* name) { this->name = name; troops = 0; }
 std::string* Territory::GetName() { return this->name; }
-void Territory::SetContinent(Continent* continent) {
-  this->continent = continent;
-  continent->AddTerritory(this);
-}
-Continent* Territory::GetContinent() { return this->continent; }
 void Territory::SetPlayer(Player* player) { this->player = player; }
 Player* Territory::GetPlayer() { return this->player; }
 void Territory::IncreaseTroops(int increase) { this->troops += increase; }

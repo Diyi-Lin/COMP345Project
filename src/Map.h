@@ -48,7 +48,6 @@ class Map : public Graph {
 class Territory {
  private:
   std::string* name;
-  Continent* continent;
   Player* player;
   int troops;
   std::vector<Territory*> neighbors;
@@ -56,8 +55,6 @@ class Territory {
  public:
   Territory(std::string* name);
   std::string* GetName();
-  void SetContinent(Continent* continent);
-  Continent* GetContinent();
   void SetPlayer(Player* player);
   Player* GetPlayer();
   void IncreaseTroops(int increase);
