@@ -24,7 +24,7 @@ int main() {
   // Test the orders
   std::cout << "Testing the orders:" << std::endl << std::endl;
   Order *deploy = new Deploy(player, playerTerritory);
-  Advance *advance = new Advance(player, playerTerritory, opponentTerritory);
+  Order *advance = new Advance(player, playerTerritory, opponentTerritory);
   Order *bomb = new Bomb(player, playerTerritory, opponentTerritory);
   Order *blockade = new Blockade(player, playerTerritory);
   Order *negotiate = new Negotiate(player, opponent);
