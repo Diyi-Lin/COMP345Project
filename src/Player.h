@@ -13,9 +13,9 @@ private:
  std::vector<Territory*> ownedTerritories;
  // Vector of pointers of cards
  std::vector<Card*> handOfCards;
- // Vector of pointers of orders
- std::vector<Order*> listOfOrders;
-
+ // Pointer to a list of orders
+ OrdersList* listOfOrders;
+ 
 public:
  // Default constructor
  Player();
@@ -33,7 +33,7 @@ public:
  // Will return a vector of pointers of territories to defend
  std::vector<Territory*> toDefend();
  // Will return a vector of pointers of territories to attack
- std::vector<Territory*> toAttack(Graph& graph);   
+ std::vector<Territory*> toAttack(Map& map);   
  // Will create an Order object and add it to the vector of pointers of orders
  void issueOrder();
 
