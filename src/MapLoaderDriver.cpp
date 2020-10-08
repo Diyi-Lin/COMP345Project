@@ -2,7 +2,8 @@
 
 //#define MAP_LOADER_DRIVER
 #ifdef MAP_LOADER_DRIVER
-int main() {
+
+  int main() {
   //Create a new map loader
   MapLoader* ml = new MapLoader();
   std::string input;
@@ -11,21 +12,30 @@ int main() {
   //Generate the map
   std::cin >> input;
   Map* map = ml->GenerateMap("MapFiles/"+input);
+  std::vector<Pair> pairs;
+
   //The ml being deleted should not affect the persistance of the created map
   delete ml;
-  //Display the map information
-  for (auto x : map->GetContinents()) {
-    std::cout << x->GetName() << std::endl;
-    for (auto y : *x->GetTerritories()) {
-      std::cout << *y->GetName() <<  std::endl;
-      std::cout <<"NEIGHBORS**: ";
-      for (auto z : *y->GetNeighbors()) {
-        std::cout << *z->GetName() << ", "; 
+  
+  for (int i = 0; i < map->GetContinents().size();++i) {
+    Continent* continent = map->GetContinents()[i];
+    std::cout << continent->GetName() << std::endl;
+    for (int j = 0; j<continent->GetTerritories()->size();++j) {
+      Territory* territory =(*map->GetTerritories())[j];
+      std::cout << *territory->GetName();
+      for (int k = 0; k < territory->GetNeighbors()->size();++k) {
+        std::cout << *(*map->GetTerritories())[k]->GetName();
       }
       std::cout << std::endl;
     }
-    std::cout << "-------------------------------------------------\n" << std::endl;
+    std::cout << "*****************************************************"
+              << std::endl;
+    std::cout << std::endl;
   }
+
+  
   return 0;
+
+
 }
 #endif

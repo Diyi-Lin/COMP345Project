@@ -107,9 +107,10 @@ void MapLoader::ProcessBorders(std::string line, DataType* dataType) {
       Territory* territory =
           (*generatedMap->GetTerritories())[std::stoi(words[0]) - 1];
       // set the neighbors with the corresponding indices
-      for (int i = 0; i < words.size(); i++)
-        territory->AddNeighbor(
-            (*generatedMap->GetTerritories())[std::stoi(words[i]) - 1]);
+      for (int i = 1; i < words.size(); i++) {
+            territory->AddNeighbor(std::stoi(words[i]) - 1);
+      }
+
 
     } catch (std::invalid_argument) {
       std::cout << "failure reading integer" << std::endl;
@@ -160,9 +161,9 @@ void MapLoader::ProcessTerritories(std::string line, DataType* dataType) {
     try {
       // The territoy is added to the map
       generatedMap->AddTerritory(territory);
-      // continents[std::stoi(words[2]) - 1]->AddTerritory(territory);
+
+      continents[std::stoi(words[2]) - 1]->AddTerritory(territory);
       // The territory is added to the continent and vise versa
-      territory->SetContinent(continents[std::stoi(words[2]) - 1]);
 
     } catch (std::invalid_argument) {
       std::cout << "failure reading integer" << std::endl;
