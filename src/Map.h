@@ -24,7 +24,10 @@ class Graph {
  public:
   Graph(int size);
   void AddTerritory(Territory* territory);
-  std::vector<Territory*>* GetTerritories();
+  std::vector<Territory*> GetTerritories();
+  void Visit(int v, std::vector<std::vector<int>> edges,
+             std::vector<bool>* visited);
+  bool DFS(std::vector<std::vector<int>> edges);
 };
 
 class Continent : public Graph {
@@ -40,26 +43,26 @@ class Map : public Graph {
  private:
   std::vector<Continent*> continents;
  public:
-  Map(int size, std::vector<Continent*>* continents);
+  Map(int size, std::vector<Continent*> continents);
   std::vector<Continent*> GetContinents();
   bool Validate();
 };
 
 class Territory {
  private:
-  std::string* name;
+  std::string name;
   Player* player;
   int troops;
   std::vector<Territory*> neighbors;
 
  public:
-  Territory(std::string* name);
-  std::string* GetName();
+  Territory(std::string name);
+  std::string GetName();
   void SetPlayer(Player* player);
   Player* GetPlayer();
   void IncreaseTroops(int increase);
   void DecraseTroops(int decrease);
   int GetTroops();
   void AddNeighbor(Territory* neighbor);
-  std::vector<Territory*>* GetNeighbors();
+  std::vector<Territory*> GetNeighbors();
 };
