@@ -1,6 +1,6 @@
 #include "MapLoader.h"
 
-#define MAP_LOADER_DRIVER
+//#define MAP_LOADER_DRIVER
 #ifdef MAP_LOADER_DRIVER
 
   int main() {

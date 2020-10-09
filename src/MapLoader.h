@@ -14,7 +14,7 @@ class MapLoader {
   ~MapLoader();
   // The main function here, it will return a null pointer if the data is not
   // valid
-  Map* GenerateMap(std::string filePath);
+  Map* GenerateMap(const std::string filePath);
 
  private:
   // Struct used to store all the validity data as the map loader scans a map
@@ -65,32 +65,32 @@ class MapLoader {
   ValidityData* validityData;
   // A untility function that splits a line of data by spaces into a vector of
   // strings
-  std::vector<std::string> Split(std::string line) const;
+  std::vector<std::string> Split(const std::string line) const;
   // Preprocess of the continents the continents to determine the amount of
   // continents and the size of the continents vector (as well as reserving
   // space for it.
-  void PreprocessContinents(std::string line, DataType* dataType);
+  void PreprocessContinents(const std::string line, DataType* const dataType);
   // Preprocess of the territories data to determine how many territories on the
   // map and to incriment the counter for the continents sizes that each
   // territory belongs to.
-  void PreprocessTerritories(std::string line, DataType* dataType);
+  void PreprocessTerritories(const std::string line, DataType* const dataType);
   // Preprocess of the borders data to determine how many neighbors each of the
   // territories have.
-  void PreprocessBorders(std::string line, DataType* dataType);
+  void PreprocessBorders(const std::string line, DataType* const dataType);
   // Processes the continents data to generate Continents gameobjects, then
   // generate a Map and add the continets to that.
-  void ProcessContinents(std::string line, DataType* dataType);
+  void ProcessContinents(const std::string line, DataType* const dataType);
   // Process the territories to generate each of the territories and add them to
   // the generated map and continents
-  void ProcessTerritories(std::string line, DataType* dataType);
+  void ProcessTerritories(const std::string line, DataType* const dataType);
   // Process the borders and set them to the corresponding territory
-  void ProcessBorders(std::string line, DataType* dataType);
+  void ProcessBorders(const std::string line, DataType* const dataType);
   // Utility function that is used in the GenerateMap function to control all
   // the processing.
-  void ReadFile(std::string path);
+  void ReadFile(const std::string path);
 
-  // The copy constructur and assignment overload operators just create new objects because
-  // this object is just used for map creation
+  // The copy constructur and assignment overload operators just create new
+  // objects because this object is just used for map creation
   MapLoader(const MapLoader& toCopy);
   MapLoader& operator=(const MapLoader& rightSide);
   friend std::ostream& operator<<(std::ostream& out, const MapLoader& toOutput);

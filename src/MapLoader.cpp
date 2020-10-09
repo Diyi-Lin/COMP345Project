@@ -1,6 +1,6 @@
 #include "MapLoader.h"
 
-std::vector<std::string> MapLoader::Split(std::string line) const {
+std::vector<std::string> MapLoader::Split(const std::string line) const {
   // Create a vector to store the strings
   std::vector<std::string> splitStrings;
   // Create indices variables for the start indicy and end indicy of the split
@@ -22,7 +22,8 @@ std::vector<std::string> MapLoader::Split(std::string line) const {
   return splitStrings;
 }
 
-void MapLoader::PreprocessContinents(std::string line, DataType* dataType) {
+void MapLoader::PreprocessContinents(const std::string line,
+                                     DataType* const dataType) {
   // The line is split into separate words
   std::vector<std::string> words = Split(line);
   if (words.size() > 0) {
@@ -43,7 +44,8 @@ void MapLoader::PreprocessContinents(std::string line, DataType* dataType) {
   }
 }
 
-void MapLoader::PreprocessTerritories(std::string line, DataType* dataType) {
+void MapLoader::PreprocessTerritories(const std::string line,
+                                      DataType* const dataType) {
   // The line is split into separate words
   std::vector<std::string> words = Split(line);
   if (words.size() > 0) {
@@ -69,7 +71,8 @@ void MapLoader::PreprocessTerritories(std::string line, DataType* dataType) {
   }
 }
 
-void MapLoader::PreprocessBorders(std::string line, DataType* dataType) {
+void MapLoader::PreprocessBorders(const std::string line,
+                                  DataType* const dataType) {
   // The line is split into separate words
   std::vector<std::string> words = Split(line);
   if (words.size() > 0) {
@@ -91,7 +94,8 @@ void MapLoader::PreprocessBorders(std::string line, DataType* dataType) {
     *dataType = DataType::None;
 }
 
-void MapLoader::ProcessBorders(std::string line, DataType* dataType) {
+void MapLoader::ProcessBorders(const std::string line,
+                               DataType* const dataType) {
   // The line is split into separate words
   std::vector<std::string> words = Split(line);
   if (words.size() > 0) {
@@ -120,7 +124,8 @@ void MapLoader::ProcessBorders(std::string line, DataType* dataType) {
     *dataType = DataType::None;
 }
 
-void MapLoader::ProcessContinents(std::string line, DataType* dataType) {
+void MapLoader::ProcessContinents(const std::string line,
+                                  DataType* const dataType) {
   // The line is split into separate words
   std::vector<std::string> words = Split(line);
 
@@ -148,7 +153,8 @@ void MapLoader::ProcessContinents(std::string line, DataType* dataType) {
   }
 }
 
-void MapLoader::ProcessTerritories(std::string line, DataType* dataType) {
+void MapLoader::ProcessTerritories(const std::string line,
+                                   DataType* const dataType) {
   // The line is split into separate words
   std::vector<std::string> words = Split(line);
   if (words.size() > 0) {
@@ -172,7 +178,7 @@ void MapLoader::ProcessTerritories(std::string line, DataType* dataType) {
   } else
     *dataType = DataType::None;
 }
-void MapLoader::ReadFile(std::string path) {
+void MapLoader::ReadFile(const std::string path) {
   // The file must be preprocessed first, if the the file is able to be opened
   // the preprocess begins.
   std::string line;
@@ -259,7 +265,7 @@ void MapLoader::ReadFile(std::string path) {
     std::cout << "Unable to open file";
 }
 
-Map* MapLoader::GenerateMap(std::string filePath) {
+Map* MapLoader::GenerateMap(const std::string filePath) {
   // Call the read file utility function to gather all the data
   ReadFile(filePath);
   // If the data is valid, then we can return the map, otherwise a nullptr is
