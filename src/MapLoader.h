@@ -8,12 +8,8 @@
 // a Map object based on the data.
 class MapLoader {
  public:
-  // The constructor will be used to generate initial validity data and indices
-  // set to 0.
   MapLoader();
-  // Destructor will delete all the validity data and ponter to continents
-  // array, It WILL NOT delete the map data or any of the data created related
-  // to the map.
+  //Destruction of the map will not affect the map 
   ~MapLoader();
   // The main function here, it will return a null pointer if the data is not valid
   Map* GenerateMap(std::string filePath);
@@ -90,4 +86,10 @@ class MapLoader {
   // Utility function that is used in the GenerateMap function to control all
   // the processing.
   void ReadFile(std::string path);
+
+
+  //The copy constructur and map loader 
+   MapLoader(const MapLoader& toCopy);
+  MapLoader& operator=(const MapLoader& rightSide);
+  friend std::ostream& operator<<(std::ostream& out, const MapLoader& toOutput);
 };

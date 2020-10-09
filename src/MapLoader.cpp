@@ -284,3 +284,20 @@ MapLoader::~MapLoader() {
   delete[] continentsSizes;
   delete[] neighborsSizes;
 }
+
+  MapLoader::MapLoader(const MapLoader& toCopy) {
+  this->validityData = toCopy.validityData;
+    this->continentsSizes = toCopy.continentsSizes;
+  this->neighborsSizes = toCopy.neighborsSizes;
+  }
+
+  MapLoader& MapLoader::operator=(const MapLoader& rightSide) {
+    this->validityData = rightSide.validityData;
+    this->continentsSizes = rightSide.continentsSizes;
+    this->neighborsSizes = rightSide.neighborsSizes;
+    return *this;
+    }
+  std::ostream& operator<<(std::ostream& out, const MapLoader& toOutput) {
+      out << "This is a maploader, please use it to generate a map.\n";
+    return out;
+  }
