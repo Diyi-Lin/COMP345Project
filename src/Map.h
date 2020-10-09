@@ -19,7 +19,7 @@ class Territory;
 class Player;
 
 class Graph {
- protected:
+ private:
   std::vector<Territory*> territories;
  public:
   Graph(int size);
@@ -50,7 +50,7 @@ class Territory {
   std::string* name;
   Player* player;
   int troops;
-  std::vector<int> neighbors;
+  std::vector<Territory*> neighbors;
 
  public:
   Territory(std::string* name);
@@ -60,6 +60,6 @@ class Territory {
   void IncreaseTroops(int increase);
   void DecraseTroops(int decrease);
   int GetTroops();
-  void AddNeighbor(int id);
-  std::vector<int>* GetNeighbors();
+  void AddNeighbor(Territory* neighbor);
+  std::vector<Territory*>* GetNeighbors();
 };
