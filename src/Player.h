@@ -6,6 +6,8 @@
 class Order;
 class Territory;
 class Graph;
+class Map;
+class OrdersList;
 
 class Player {
 private:
