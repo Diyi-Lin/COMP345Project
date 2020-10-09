@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
+
 #include "Map.h"
 
 // The map loader class will be used to simply read a map file, and instantiate
@@ -9,9 +10,10 @@
 class MapLoader {
  public:
   MapLoader();
-  //Destruction of the map will not affect the map 
+  // Destruction of the map will not affect the map
   ~MapLoader();
-  // The main function here, it will return a null pointer if the data is not valid
+  // The main function here, it will return a null pointer if the data is not
+  // valid
   Map* GenerateMap(std::string filePath);
 
  private:
@@ -65,8 +67,8 @@ class MapLoader {
   // strings
   std::vector<std::string> Split(std::string line) const;
   // Preprocess of the continents the continents to determine the amount of
-  // continents and the size of the continents vector (as well as reserving space
-  // for it.
+  // continents and the size of the continents vector (as well as reserving
+  // space for it.
   void PreprocessContinents(std::string line, DataType* dataType);
   // Preprocess of the territories data to determine how many territories on the
   // map and to incriment the counter for the continents sizes that each
@@ -87,9 +89,9 @@ class MapLoader {
   // the processing.
   void ReadFile(std::string path);
 
-
-  //The copy constructur and map loader 
-   MapLoader(const MapLoader& toCopy);
+  // The copy constructur and assignment overload operators just create new objects because
+  // this object is just used for map creation
+  MapLoader(const MapLoader& toCopy);
   MapLoader& operator=(const MapLoader& rightSide);
   friend std::ostream& operator<<(std::ostream& out, const MapLoader& toOutput);
 };

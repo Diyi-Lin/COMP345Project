@@ -108,9 +108,9 @@ void MapLoader::ProcessBorders(std::string line, DataType* dataType) {
           (*generatedMap->GetTerritories())[std::stoi(words[0]) - 1];
       // set the neighbors with the corresponding indices
       for (int i = 1; i < words.size(); i++) {
-            territory->AddNeighbor(std::stoi(words[i]) - 1);
+        territory->AddNeighbor(
+            (*generatedMap->GetTerritories())[std::stoi(words[i]) - 1]);
       }
-
 
     } catch (std::invalid_argument) {
       std::cout << "failure reading integer" << std::endl;
@@ -285,19 +285,20 @@ MapLoader::~MapLoader() {
   delete[] neighborsSizes;
 }
 
-  MapLoader::MapLoader(const MapLoader& toCopy) {
-  this->validityData = toCopy.validityData;
-    this->continentsSizes = toCopy.continentsSizes;
-  this->neighborsSizes = toCopy.neighborsSizes;
-  }
-
-  MapLoader& MapLoader::operator=(const MapLoader& rightSide) {
-    this->validityData = rightSide.validityData;
-    this->continentsSizes = rightSide.continentsSizes;
-    this->neighborsSizes = rightSide.neighborsSizes;
-    return *this;
-    }
-  std::ostream& operator<<(std::ostream& out, const MapLoader& toOutput) {
-      out << "This is a maploader, please use it to generate a map.\n";
-    return out;
-  }
+// The copy constructor just creates a new object because it needs to generate a
+// new map if needed
+MapLoader::MapLoader(const MapLoader& toCopy) {
+  validityData = new ValidityData();
+  index = 0;
+}
+// The assignment overload just creates a new object because it needs to
+// generate a new map if needed
+MapLoader& MapLoader::operator=(const MapLoader& rightSide) {
+  validityData = new ValidityData();
+  index = 0;
+  return *this;
+}
+std::ostream& operator<<(std::ostream& out, const MapLoader& toOutput) {
+  out << "This is a maploader, please use it to generate a map.\n";
+  return out;
+}

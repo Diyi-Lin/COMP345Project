@@ -1,6 +1,6 @@
 #include "MapLoader.h"
 
-//#define MAP_LOADER_DRIVER
+#define MAP_LOADER_DRIVER
 #ifdef MAP_LOADER_DRIVER
 
   int main() {
@@ -23,8 +23,8 @@
       Territory* territory =(*map->GetTerritories())[j];
       std::cout << *territory->GetName() << " Neighbors: ";
       for (int k = 0; k < territory->GetNeighbors()->size();++k) {
-        int index = (*territory->GetNeighbors())[k];
-        Territory* neb = (*map->GetTerritories())[index];
+      
+        Territory* neb = (*territory->GetNeighbors())[k];
         std::cout << "  " << *neb->GetName();
       }
       std::cout << std::endl;
