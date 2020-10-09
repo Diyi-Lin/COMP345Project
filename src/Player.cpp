@@ -1,13 +1,13 @@
 #include "Player.h" 
 
 // Default constructor
-Player::Player() : ownedTerritories(std::vector<Territory*>(0)), 
-    handOfCards(std::vector<Card*>(0)), 
-    listOfOrders() 
+Player::Player() : ownedTerritories(std::vector<Territory*>(0)),
+    handOfCards(std::vector<Card*>(0)),
+    listOfOrders(new OrdersList())
 {}
 // Parametric constructor
 Player::Player(std::vector<Territory*> terr) : handOfCards(std::vector<Card*>(0)), 
-    listOfOrders() 
+    listOfOrders(new OrdersList())
 {
     for (Territory* t : terr)
         this->AddTerritoryToPlayer(t);
@@ -49,9 +49,8 @@ Player::~Player() {
 
 // Stream insertion operator
 std::ostream& operator<<(std::ostream& out, const Player& toOutput) {
-    out << "Player has " << toOutput.ownedTerritories.size() << " territories, " 
-    << toOutput.handOfCards.size() << " cards and " 
-    << *toOutput.listOfOrders << " orders ready.";
+    out << "Player has " << toOutput.ownedTerritories.size() << " territories, "
+        << toOutput.handOfCards.size() << " cards and " << *(toOutput.listOfOrders) ;
     return out;
 }
 
@@ -62,20 +61,13 @@ std::vector<Territory*> Player::toDefend() {
 
 // Returns a vector of pointers of territories to attack
 std::vector<Territory*> Player::toAttack(Map& map) {
-    std::vector<Territory*>* ptrVectorAllTerritories = map.GetTerritories();
+    std::vector<Territory*> vectorAllTerritories = map.GetTerritories();
     std::vector<Territory*> territoriesToAttack;
 
-    for (int i = 0; i < ptrVectorAllTerritories->size(); i++) {
+    for (int i = 0; i < vectorAllTerritories.size(); i++) {
         for (int j = 0; j < ownedTerritories.size(); j++) {
-            // ownedTerritories is a vector of pointers, so to get the name of the territory, 
-            // we dereference ownedTerritories[i] by using ->. We get the address of the name, 
-            // but we want the actual name, thus using * before the whole (ownedTerritories[i]->GetName()).
-            // prtVectorAllTerritories is a pointer to a vector, so to get the actual vector, 
-            // we dereference it using *. To get the name, we dereference (*prtVectorAllTerritories)[j] 
-            // by using ->. We have the address of the name, but to get the real name, we use *
-            // before the whole (*ptrVectorAllTerritories)[i]->GetName().
-            if (*(ownedTerritories[j]->GetName()) != (*((*ptrVectorAllTerritories)[i]->GetName())))
-                territoriesToAttack.push_back((*ptrVectorAllTerritories)[i]);
+            if (ownedTerritories[j]->GetName() != vectorAllTerritories[i]->GetName())
+                territoriesToAttack.push_back(vectorAllTerritories[i]);
         }
     }
     return territoriesToAttack;
@@ -84,8 +76,7 @@ std::vector<Territory*> Player::toAttack(Map& map) {
 // Creates an Order object and adds it to the vector of pointers of orders
 void Player::issueOrder() {
     // Creating a Deploy order
-    Order* orderToIssue = new Deploy();
-    AddOrderToPlayer(orderToIssue);
+    AddOrderToPlayer(new Deploy(this, this->ownedTerritories[0]));
 }
 
 // Adds the given territory pointer to the vector of owned territories
