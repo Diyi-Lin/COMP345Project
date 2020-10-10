@@ -1,6 +1,9 @@
 #include <iostream>
 #include "Cards.h"
 
+// #define CARDS_DRIVER
+#ifdef CARDS_DRIVER
+
 int main()
 {
 
@@ -92,3 +95,6 @@ int main()
 
 
 
+
+
+#endif

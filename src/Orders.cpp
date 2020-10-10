@@ -79,12 +79,6 @@ Order& Order::operator=(const Order& rightSide) {
   return *this;
 }
 
-bool Order::areAdjacent(Territory* source, Territory* target) {
-  std::vector<Territory*>* neighborsOfSource = source->GetNeighbors();
-  return std::any_of(neighborsOfSource->begin(), neighborsOfSource->end(),
-                     [target](Territory* t) { return (t == target); });
-}
-
 std::ostream& operator<<(std::ostream& out, const Order& toOutput) {
   return toOutput.doPrint(out);
 }
@@ -126,17 +120,19 @@ std::ostream& Deploy::doPrint(std::ostream& out) const {
   return out;
 }
 
-Advance::Advance() : Order(), sourceTerritory(), targetTerritory() {}
+Advance::Advance() : Order(), sourceTerritory(), targetTerritory(), map() {}
 
 Advance::Advance(Player* player, Territory* sourceTerritory,
-                 Territory* targetTerritory)
+                 Territory* targetTerritory, Map* map)
     : Order(player) {
   this->sourceTerritory = sourceTerritory;
   this->targetTerritory = targetTerritory;
+  this->map = map;
 }
 Advance::Advance(const Advance& toCopy) : Order(toCopy) {
   this->sourceTerritory = toCopy.sourceTerritory;
   this->targetTerritory = toCopy.targetTerritory;
+  this->map = toCopy.map;
 }
 
 Advance::~Advance() {}
@@ -145,12 +141,13 @@ Advance& Advance::operator=(const Advance& rightSide) {
   Order::operator=(rightSide);
   sourceTerritory = rightSide.sourceTerritory;
   targetTerritory = rightSide.targetTerritory;
+  map = rightSide.map;
   return *this;
 }
 
 bool Advance::validate() {
   // Check if source and target territories are neighbors
-  return Order::areAdjacent(sourceTerritory, targetTerritory);
+  return map->AreAdjacent(sourceTerritory, targetTerritory);
 }
 
 void Advance::execute() {
@@ -173,18 +170,20 @@ std::ostream& operator<<(std::ostream& out, const Advance& toOutput) {
   return toOutput.doPrint(out);
 }
 
-Bomb::Bomb() : Order(), sourceTerritory(), targetTerritory() {}
+Bomb::Bomb() : Order(), sourceTerritory(), targetTerritory(), map() {}
 
 Bomb::Bomb(Player* player, Territory* sourceTerritory,
-           Territory* targetTerritory)
+           Territory* targetTerritory, Map* map)
     : Order(player) {
   this->sourceTerritory = sourceTerritory;
   this->targetTerritory = targetTerritory;
+  this->map = map;
 }
 
 Bomb::Bomb(const Bomb& toCopy) : Order(toCopy) {
   this->sourceTerritory = toCopy.sourceTerritory;
   this->targetTerritory = toCopy.targetTerritory;
+  this->map = toCopy.map;
 }
 
 Bomb::~Bomb() {}
@@ -193,6 +192,7 @@ Bomb& Bomb::operator=(const Bomb& rightSide) {
   Order::operator=(rightSide);
   sourceTerritory = rightSide.sourceTerritory;
   targetTerritory = rightSide.targetTerritory;
+  map = rightSide.map;
   return *this;
 }
 
@@ -203,7 +203,7 @@ std::ostream& operator<<(std::ostream& out, const Bomb& toOutput) {
 bool Bomb::validate() {
   // Check that territories are adjacent and that target
   // does not belong to player
-  bool areAdjacent = Order::areAdjacent(sourceTerritory, targetTerritory);
+  bool areAdjacent = map->AreAdjacent(sourceTerritory, targetTerritory);
   bool targetDoesntBelongToPlayer = (targetTerritory->GetPlayer() != player);
   return (areAdjacent && targetDoesntBelongToPlayer);
 }
