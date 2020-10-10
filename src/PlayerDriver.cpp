@@ -2,7 +2,7 @@
 #include "Map.h"
 #include "Orders.h"
 
-//#define PLAYER_DRIVER
+#define PLAYER_DRIVER
 #ifdef PLAYER_DRIVER
 
 int main() {

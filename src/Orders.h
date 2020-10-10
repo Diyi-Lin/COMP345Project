@@ -10,7 +10,6 @@
 class Player;
 class Territory;
 class Graph;
-class Map;
 
 class Order {
  public:
@@ -24,6 +23,10 @@ class Order {
   virtual void execute() = 0;
 
   friend std::ostream& operator<<(std::ostream& out, const Order& toOutput);
+
+  // Helper function to know if two territories are adjacent
+  // Put this here atm but should probably be moved to map functionnalities
+  static bool areAdjacent(Territory* source, Territory* target);
 
  protected:
   Player* player;
@@ -56,7 +59,7 @@ class Advance : public Order {
  public:
   Advance();
   Advance(Player* player, Territory* sourceTerritory,
-          Territory* targetTerritory, Map* map);
+          Territory* targetTerritory);
   Advance(const Advance& toCopy);
   ~Advance();
   Advance& operator=(const Advance& rightSide);
@@ -69,7 +72,6 @@ class Advance : public Order {
  private:
   Territory* sourceTerritory;
   Territory* targetTerritory;
-  Map* map;
   virtual std::ostream& doPrint(std::ostream& out) const;
 };
 
@@ -77,7 +79,7 @@ class Advance : public Order {
 class Bomb : public Order {
  public:
   Bomb();
-  Bomb(Player* player, Territory* sourceTerritory, Territory* targetTerritory, Map* map);
+  Bomb(Player* player, Territory* sourceTerritory, Territory* targetTerritory);
   Bomb(const Bomb& toCopy);
   ~Bomb();
   Bomb& operator=(const Bomb& rightSide);
@@ -90,7 +92,6 @@ class Bomb : public Order {
  private:
   Territory* sourceTerritory;
   Territory* targetTerritory;
-  Map* map;
   virtual std::ostream& doPrint(std::ostream& out) const;
 };
 
