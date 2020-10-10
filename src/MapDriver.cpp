@@ -1,27 +1,31 @@
-#define MAP_DRIVER
-#ifdef MAP_DRIVER
-
 #include <iostream>
 #include <string>
 
 #include "Map.h"
 
-int main() {
-  Territory territories[4] = {
-      Territory(std::string("T0")), Territory(std::string("T1")),
-      Territory(std::string("T2")), Territory(std::string("T3"))};
-  territories[0].AddNeighbor(&territories[1]);
-  territories[1].AddNeighbor(&territories[2]);
-  territories[2].AddNeighbor(&territories[3]);
-  territories[0].AddNeighbor(&territories[3]);
-  territories[3].AddNeighbor(&territories[0]);
-  std::vector<Continent*> continents = std::vector<Continent*>();
-  Map map = Map(4, continents);
-  map.AddTerritory(&territories[0]);
-  map.AddTerritory(&territories[1]);
-  map.AddTerritory(&territories[2]);
-  map.AddTerritory(&territories[3]);
-  map.Validate();
+//#define MAP_DRIVER
+#ifdef MAP_DRIVER
+
+int main() { 
+  Continent c1 = Continent("c1", 0);
+  Continent c2 = Continent("c2", 0);
+
+  c1.CreateTerritory(0, "t0");
+  c1.CreateTerritory(1, "t1");
+  c2.CreateTerritory(2, "t2");
+  c2.CreateTerritory(3, "t3");
+
+  Map map = Map(4, 2);
+
+  map.AddContinent(&c1);
+  map.AddContinent(&c2);
+
+  map.AddBorder({0, 1, 3});
+  map.AddBorder({1, 0, 2});
+  map.AddBorder({2, 0});
+  map.AddBorder({3, 0});
+
+  std::cout << map.Validate() << std::endl;
 }
 
 #endif

@@ -105,17 +105,14 @@ void MapLoader::ProcessBorders(const std::string line,
       std::cout << "Error, territory has no edges... invalid map file"
                 << std::endl;
     }
+    // JG
+    std::vector<int> borders;
+    borders.reserve(words.size());
     try {
-      // Get a pointer to the specific territory.
-      std::vector<Territory*>* terrs = generatedMap->GetTerritories();
-      Territory* territory =
-          (*generatedMap->GetTerritories())[std::stoi(words[0]) - 1];
-      // set the neighbors with the corresponding indices
-      for (int i = 1; i < words.size(); i++) {
-        territory->AddNeighbor(
-            (*generatedMap->GetTerritories())[std::stoi(words[i]) - 1]);
+      for (int i = 0; i < words.size(); i++) {
+        borders.push_back(std::stoi(words[i]));
       }
-
+      generatedMap->GetBorders()->push_back(borders);
     } catch (std::invalid_argument) {
       std::cout << "failure reading integer" << std::endl;
       validityData->validData = false;
@@ -133,7 +130,8 @@ void MapLoader::ProcessContinents(const std::string line,
     // Continents MUST have 2 data points(name and army value).
     if (words.size() < 2) validityData->validData = false;
     // A new continent is generated with the sizes found in the preprocess.
-    Continent* continent = new Continent(continentsSizes[index], words[0]);
+    // JG
+    Continent* continent = new Continent(words[0], std::stoi(words[1]));
     // Add the continent to the local container to be later used in the Maps
     // creation
     continents.push_back(continent);
@@ -149,7 +147,11 @@ void MapLoader::ProcessContinents(const std::string line,
     // Done processing the continents data, enough data is collected to
     // instantiate the Map object.
     *dataType = DataType::None;
-    generatedMap = new Map(territoriesCount, &continents);
+    // JG
+    generatedMap = new Map(territoriesCount, continents.size());
+    for (Continent* c : continents) {
+      generatedMap->AddContinent(c);
+    }
   }
 }
 
@@ -161,16 +163,11 @@ void MapLoader::ProcessTerritories(const std::string line,
     // The line must contain at least 3 data points (indicy, name and
     // continent).
     if (words.size() < 3) validityData->validData = false;
-    // A new territoy is created
-    std::string* name = new std::string(words[1]);
-    Territory* territory = new Territory(name);
+    // JG
     try {
-      // The territoy is added to the map
-      generatedMap->AddTerritory(territory);
-
-      continents[std::stoi(words[2]) - 1]->AddTerritory(territory);
-      // The territory is added to the continent and vise versa
-
+      // A new territoy is created and is added to the continent
+      generatedMap->GetContinents()[std::stoi(words[2])-1]->CreateTerritory(
+          std::stoi(words[0]), words[1]);
     } catch (std::invalid_argument) {
       std::cout << "failure reading integer" << std::endl;
       validityData->validData = false;

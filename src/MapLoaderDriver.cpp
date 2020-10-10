@@ -1,6 +1,6 @@
 #include "MapLoader.h"
 
-//#define MAP_LOADER_DRIVER
+#define MAP_LOADER_DRIVER
 #ifdef MAP_LOADER_DRIVER
 
   int main() {
@@ -20,11 +20,12 @@
     Continent* continent = map->GetContinents()[i];
     std::cout << continent->GetName() << std::endl;
     for (int j = 0; j<continent->GetTerritories()->size();++j) {
-      Territory* territory =(*map->GetTerritories())[j];
+      Territory* territory = &(continent->GetTerritories())->at(j);
       std::cout << *territory->GetName() << " Neighbors: ";
-      for (int k = 0; k < territory->GetNeighbors()->size();++k) {
+      std::vector<Territory*> neighbors = map->GetNeighbors(territory);
+      for (int k = 0; k < neighbors.size();++k) {
       
-        Territory* neb = (*territory->GetNeighbors())[k];
+        Territory* neb = neighbors[k];
         std::cout << "  " << *neb->GetName();
       }
       std::cout << std::endl;
@@ -33,8 +34,7 @@
               << std::endl;
     std::cout << std::endl;
   }
-
-  
+  std::cout << map->Validate() << std::endl;
   return 0;
 
 
