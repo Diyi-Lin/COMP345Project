@@ -18,57 +18,51 @@
 class Territory;
 class Player;
 
-class Continent{
+class Graph {
  private:
-  std::string name;
-  std::vector<Territory> territories;
-  int bonus;
+  std::vector<Territory*> territories;
  public:
-  Continent(std::string name, int bonus);
-  std::string GetName();
-  std::vector<Territory>* GetTerritories();
-  void CreateTerritory(int id, std::string name);
-  int GetBonus();
+  Graph(int size);
+  void AddTerritory(Territory* territory);
+  std::vector<Territory*> GetTerritories();
+  void Visit(int v, std::vector<std::vector<int>> edges,
+             std::vector<bool>* visited);
+  bool DFS(std::vector<std::vector<int>> edges);
 };
 
-class Map {
+class Continent : public Graph {
  private:
-  std::vector<std::vector<int>> borders;
+  std::string name;
+ public:
+  Continent(int size, std::string name);
+  void SetName(std::string name);
+  std::string GetName();
+};
+
+class Map : public Graph {
+ private:
   std::vector<Continent*> continents;
  public:
-  Map(int vertices, int continents);
-  void AddContinent(Continent* continent);
+  Map(int size, std::vector<Continent*> continents);
   std::vector<Continent*> GetContinents();
-  void AddBorder(std::vector<int> data);
-  bool AreAdjacent(Territory* source, Territory* target);
-  std::vector<Territory*> GetTerritories();
-  std::vector<Territory*> GetNeighbors(Territory* territory);
-  Territory* GetTerriotryByID(int id);
-  std::vector<std::vector<int>>* GetBorders();
-  std::vector<int>* GetBordersById(int id);
-  void Visit(int id);
   bool Validate();
 };
 
 class Territory {
  private:
   std::string name;
-  int id;
   Player* player;
   int troops;
-  bool visited = false;
+  std::vector<Territory*> neighbors;
 
  public:
-  Territory();
-  Territory(int id, std::string name);
-  std::string* GetName();
+  Territory(std::string name);
+  std::string GetName();
   void SetPlayer(Player* player);
   Player* GetPlayer();
-  void SetId(int id);
-  int GetId();
   void IncreaseTroops(int increase);
   void DecraseTroops(int decrease);
   int GetTroops();
-  void SetVisited(bool b);
-  bool GetVisited();
+  void AddNeighbor(Territory* neighbor);
+  std::vector<Territory*> GetNeighbors();
 };
