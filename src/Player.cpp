@@ -66,7 +66,7 @@ std::vector<Territory*> Player::toAttack(Map& map) {
 
     for (int i = 0; i < vectorAllTerritories.size(); i++) {
         for (int j = 0; j < ownedTerritories.size(); j++) {
-            if (ownedTerritories[j]->GetName() != vectorAllTerritories[i]->GetName())
+            if (*(ownedTerritories[j]->GetName()) != *(vectorAllTerritories[i]->GetName()))
                 territoriesToAttack.push_back(vectorAllTerritories[i]);
         }
     }
