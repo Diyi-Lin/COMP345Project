@@ -82,25 +82,21 @@ std::vector<int>* Map::GetBordersById(int id,
       return &borders->at(i);
     }
   }
+  return nullptr;
 }
 void Map::Visit(int id, std::vector<std::vector<int>>* borders) {
   Territory* territory = this->GetTerriotryByID(id);
-  std::cout << "Visiting: " << id << " : " << *territory->GetName() << std::endl;
   if (territory->GetVisited() == true) {
-    std::cout << "Its already visited" << std::endl;
     return;
   }
   territory->SetVisited(true);
   std::vector<int>* border = this->GetBordersById(id, borders);
-  std::cout << "This terr has this many border: " << border->size()-1
-            << std::endl;
+  if (border == nullptr) return;
   for (int i = 1; i < border->size(); i++) {
-    std::cout << "Border: " << border->at(i) << std::endl;
     this->Visit(border->at(i), borders);
   }
 }
 std::vector<std::vector<int>> Map::GetInvertedBorders() {
-  std::cout << "In" << std::endl;
   std::vector<std::vector<int>>* borders = &this->borders;
   std::vector<std::vector<int>> iborders;
   iborders.reserve(borders->size());
@@ -110,17 +106,13 @@ std::vector<std::vector<int>> Map::GetInvertedBorders() {
       iborders.push_back({terrs->at(i).GetId()});
     }
   }
-  std::cout << "Created" << std::endl;
   for (int i = 0; i < borders->size(); i++) {
     int v = borders->at(i).at(0);
-    std::cout << "Border " << i << " has id: " << v << std::endl;
     for (int j = 1; j < borders->at(i).size(); j++) {
       int u = borders->at(i).at(j);
-      std::cout << "    neighbor id: " << u << std::endl;
       this->GetBordersById(u, &iborders)->push_back(v);
     }
   }
-  std::cout << "Out" << std::endl;
   return iborders;
 }
 std::vector<std::vector<int>> Map::GetContinentBorders(
@@ -132,6 +124,7 @@ std::vector<std::vector<int>> Map::GetContinentBorders(
   }
   for (std::vector<int> &b : cborders) {
     std::vector<int>* border = GetBordersById(b.at(0), borders);
+    if (border == nullptr) continue;
     for (int i = 1; i < border->size(); i++) {
       int id = border->at(i);
       for (int j = 0; j < cborders.size(); j++) {
@@ -163,34 +156,44 @@ bool Map::AreAllVisited() {
   }
   return true;
 }
+
 bool Map::Validate() { 
-  std::cout << "Validating..." << std::endl;
   std::vector<std::vector<int>>* borders = &this->borders;
   std::vector<std::vector<int>> iborders = this->GetInvertedBorders();
   this->AllSetVisited(false);
 
-  std::cout << "1    Starting visits" << std::endl;
+  if (this->continents.size() < 1) { // Empty maps are valid.
+    return true;
+  }
+  int id = -1;
+  for (int i = 0; i < this->GetContinents().size(); i++) {
+    if (this->GetContinents().at(i)->GetTerritories()->size() > 0) {
+      id = i;
+      break;
+    }
+  }
+  if (id == -1) { // All continents are empty
+    return true;
+  }
+
   try {
-    this->Visit(this->continents.at(0)->GetTerritories()->at(0).GetId(), borders);
+    this->Visit(this->continents.at(id)->GetTerritories()->at(0).GetId(), borders);
   } catch (...) {
-    std::cout << "Error: unable to traverse." << std::endl;
+    std::cout << "************Error: unable to traverse." << std::endl;
     return false;
   }
-  std::cout << "Ended visits" << std::endl;
   if (!this->AreAllVisited()) {
     return false;
   }
   this->AllSetVisited(false);
 
-  std::cout << "2    Starting visits" << std::endl;
   try {
-    this->Visit(this->continents.at(0)->GetTerritories()->at(0).GetId(),
+    this->Visit(this->continents.at(id)->GetTerritories()->at(0).GetId(),
                 &iborders);
   } catch (...) {
-    std::cout << "Error: unable to traverse." << std::endl;
+    std::cout << "************Error: unable to traverse." << std::endl;
     return false;
   }
-  std::cout << "Ended visits" << std::endl;
   if (!this->AreAllVisited()) {
     return false;
   }
@@ -201,37 +204,49 @@ bool Map::Validate() {
 
   for (Continent* c : this->continents) {
     cborders = this->GetContinentBorders(c, borders);
-    std::cout << "3    Starting visits" << std::endl;
+    if (c->GetTerritories()->size() < 1) {
+      continue;
+    }
     try {
       this->Visit(c->GetTerritories()->at(0).GetId(),
                   &cborders);
     } catch (...) {
-      std::cout << "Error: unable to traverse." << std::endl;
+      std::cout << "************Error: unable to traverse." << std::endl;
       return false;
     }
-    std::cout << "Ended visits" << std::endl;
     if (!c->AreAllVisited()) {
-      std::cout << "SOME NODES WERENT VISITED!" << std::endl;
       return false;
     }
     this->AllSetVisited(false);
 
     icborders = this->GetContinentBorders(c, &iborders);
-    std::cout << "4    Starting visits" << std::endl;
     try {
       this->Visit(c->GetTerritories()->at(0).GetId(), &icborders);
     } catch (...) {
-      std::cout << "Error: unable to traverse." << std::endl;
+      std::cout << "************Error: unable to traverse." << std::endl;
       return false;
     }
-    std::cout << "Ended visits" << std::endl;
     if (!c->AreAllVisited()) {
-      std::cout << "SOME NODES WERENT VISITED!" << std::endl;
       return false;
     }
     this->AllSetVisited(false);
   }
 
+  for (Continent* c : this->continents) {
+    std::vector<Territory>* terrs = c->GetTerritories(); 
+    for (int i = 0; i < terrs->size(); i++) {
+      Territory* t = &terrs->at(i);
+      if (t->GetVisited() == true) {
+        return false;
+      }
+      t->SetVisited(true);
+    }
+  }
+  if (!this->AreAllVisited()) {
+    return false;
+  }
+
+  this->AllSetVisited(false);
   return true;
 }
 
