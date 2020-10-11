@@ -7,28 +7,25 @@
 
 int main() {
 
-    // Creating Territories
-    Territory* terr1 = new Territory("A"); 
-    Territory* terr2 = new Territory("B");
-    Territory* terr3 = new Territory("C");
-    std::vector<Territory*> territories { terr1, terr2, terr3 };
     // Creating continents
     Continent c[] = {
-      Continent(1, std::string("W")),
-      Continent(2, std::string("X"))
+      Continent("W", 1),
+      Continent("X", 2)
     };
-    // Adding territories to continents
-    c[0].AddTerritory(terr1);
-    c[1].AddTerritory(terr2);
-    c[1].AddTerritory(terr3);
+
+    // Creating Territories
+    Territory* terr1 = c[0].CreateTerritory(101, "A");
+    Territory* terr2 = c[1].CreateTerritory(102, "B");
+    Territory* terr3 = c[1].CreateTerritory(103, "C");
+    std::vector<Territory*> territories{terr1, terr2, terr3};
+
     // Pointer to a vector of pointers of continents
     std::vector<Continent*> continents({ &c[0], &c[1] });
 
-    // Creating a Map from the 2 continents and adding the territories to it
-    Map* map = new Map(2, continents);
-    map->AddTerritory(terr1);
-    map->AddTerritory(terr2);
-    map->AddTerritory(terr3);
+    // Creating a Map and adding the 2 continents
+    Map* map = new Map(3, 2);
+    map->AddContinent(&c[0]);
+    map->AddContinent(&c[1]);
 
     // Creating Player object with default constructor
     Player* p1 = new Player();
@@ -65,13 +62,13 @@ int main() {
     std::vector<Territory*> terrToDefend = p1->toDefend();
     std::cout << "Player p1's territories to defend:" << std::endl;
     for (Territory* t : terrToDefend)
-        std::cout << (t->GetName()) << std::endl;
+        std::cout << (*t->GetName()) << std::endl;
 
     // Displaying p1's territories to attack (should be B and C)
     std::vector<Territory*> terrToAttack = p1->toAttack(*map);
     std::cout << "\nPlayer p1's territories to attack:" << std::endl;
     for (Territory* t : terrToAttack)
-        std::cout << (t->GetName()) << std::endl;
+        std::cout << (*t->GetName()) << std::endl;
 
     // Deleting everything
     delete p1;

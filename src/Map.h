@@ -27,7 +27,7 @@ class Continent{
   Continent(std::string name, int bonus);
   std::string GetName();
   std::vector<Territory>* GetTerritories();
-  void CreateTerritory(int id, std::string name);
+  Territory* CreateTerritory(int id, std::string name);
   int GetBonus();
   bool AreAllVisited();
 };

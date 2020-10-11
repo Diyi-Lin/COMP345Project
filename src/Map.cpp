@@ -7,8 +7,9 @@ Continent::Continent(std::string name, int bonus) {
 }
 std::string Continent::GetName() { return this->name; }
 std::vector<Territory>* Continent::GetTerritories() { return &this->territories; }
-void Continent::CreateTerritory(int id, std::string name) {
+Territory* Continent::CreateTerritory(int id, std::string name) {
   this->territories.push_back(Territory(id, name));
+  return &this->territories.back();
 }
 int Continent::GetBonus() { return this->bonus; }
 bool Continent::AreAllVisited() {
@@ -32,8 +33,10 @@ bool Map::AreAdjacent(Territory* source, Territory* target) {
   int targetId = target->GetId();
   for (std::vector<int> t : this->borders) {
     if (t.at(0) == sourceId) {
-      if (std::find(t.begin(), t.end(), targetId) != t.end()) {
-        return true;
+      for (int i = 1; i < t.size(); i++) {
+        if (t.at(i) == targetId) {
+          return true;
+        }
       }
       return false;
     }

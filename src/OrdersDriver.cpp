@@ -1,6 +1,6 @@
 //#define ORDERS_DRIVER
-
 #ifdef ORDERS_DRIVER
+
 #include <string>
 #include <iostream>
 
@@ -12,20 +12,22 @@ int main() {
   // Create some players and territories to do the tests
   Player *player = new Player();
   Player *opponent = new Player();
-  Territory *playerTerritory =
-      new Territory(&std::string("Player's territory"));
+  Continent continent = Continent("Continent", 0);
+  Territory *playerTerritory = 
+      continent.CreateTerritory(101, "Player's territory");
   Territory *opponentTerritory =
-      new Territory(&std::string("Opponent's territory"));
+      continent.CreateTerritory(102, "Opponent's territory");
+  Map map = Map(2, 1);
+  map.AddBorder({101, 102});
+  map.AddBorder({102, 101});
   playerTerritory->SetPlayer(player);
   opponentTerritory->SetPlayer(opponent);
-  playerTerritory->AddNeighbor(opponentTerritory);
-  opponentTerritory->AddNeighbor(playerTerritory);
 
   // Test the orders
   std::cout << "Testing the orders:" << std::endl << std::endl;
   Order *deploy = new Deploy(player, playerTerritory);
-  Order *advance = new Advance(player, playerTerritory, opponentTerritory);
-  Order *bomb = new Bomb(player, playerTerritory, opponentTerritory);
+  Order *advance = new Advance(player, playerTerritory, opponentTerritory, &map);
+  Order *bomb = new Bomb(player, playerTerritory, opponentTerritory, &map);
   Order *blockade = new Blockade(player, playerTerritory);
   Order *negotiate = new Negotiate(player, opponent);
   Order *airlift = new Airlift(player, playerTerritory, opponentTerritory);

@@ -3,7 +3,7 @@
 
 #include "Map.h"
 
-#define MAP_DRIVER
+//#define MAP_DRIVER
 #ifdef MAP_DRIVER
 
 int main() {
